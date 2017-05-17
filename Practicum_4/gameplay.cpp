@@ -8,8 +8,8 @@
 #include <string>
 
 Gameplay::Gameplay( GameWidget *gw ) : gw( gw ), points( 0 ), keyAlreadyPressed( false ), keyAlreadyHoldedTime( 0 ),
-    MAIN_INTERVAL( 325 ), BOOST_INTERVAL( 100 ), PUSHING_TIME( 250 ), FAST_INTERVAL( 1 ), gameIsOver( false ),
-    gamePaused( false )
+    colorAppleTime( 0 ), MAIN_INTERVAL( 325 ), BOOST_INTERVAL( 100 ), PUSHING_TIME( 250 ), COLOR_INTERVAL( 10 ),
+    gameIsOver( false ), gamePaused( false ), gameplayAlreadyStarted( false )
 {
     button_back.load( ":/images/Images/button_back.png" );
     button_pause.load( ":/images/Images/button_pause.png" );
@@ -40,7 +40,8 @@ Gameplay::Gameplay( GameWidget *gw ) : gw( gw ), points( 0 ), keyAlreadyPressed(
     timer4key = new QTimer( this );
     connect( timer4key, SIGNAL( timeout() ), this, SLOT( holdingKey() ) );
 
-    speedMovingTimer = new QTimer( this );
+    timer4Apple = new QTimer( this );
+    connect( timer4Apple, SIGNAL( timeout() ), this, SLOT( appleColorChange() ) );
 
     backRect = QRect( 32, 15, 213, 64 );
     pauseRect = QRect( 247, 15, 213, 64 );
@@ -52,51 +53,19 @@ Gameplay::~Gameplay()
 {
     delete timer;
     delete timer4key;
+    delete timer4Apple;
     delete snake;
     delete wall;
     delete field;
 }
 
 void Gameplay::paint()
-{ /*
+{
     qDebug() << "GP paint";
-    gw->painter->begin( gw );
-    gw->painter->drawPixmap( gw->rect(), QPixmap( ":/images/Images/gameplay_bg.png" ) );
-    gw->painter->drawImage( 32, 15, button_back );
-    if ( !gamePaused )
-        gw->painter->drawImage( 247, 15, button_pause );
-    else
-        gw->painter->drawImage( 247, 15, button_continue );
-    gw->painter->setPen( Qt::white );
-    gw->painter->setFont( QFont( "Times", 18, QFont::Bold ) );
-    static QString str;   ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///
-    gw->painter->drawText( QPoint( 600, 47 ), QString( "Points: " + str.number( points ) ) );
-    gw->painter->end();
-
-    field->paintGameplayObject();
-    wall->paintGameplayObject();
-    snake->paintGameplayObject();
-    apple->paintGameplayObject();
-
-    if ( gameIsOver ) {
-        gw->painter->begin( gw );
-        gw->painter->drawPixmap( gw->rect(), QPixmap( ":/images/Images/gameplay_bg.png" ) );
-        gw->painter->drawImage( 32, 15, button_back );
-        gw->painter->end();
-
-        field->paintGameplayObject();
-        wall->paintGameplayObject();
-        snake->paintGameplayObject();
-        apple->paintGameplayObject();
-
-        gw->painter->begin( gw );
-        gw->painter->drawImage( 350, 220, QImage( ":/images/Images/gameover.png" ) );
-        gw->painter->setPen( Qt::white );
-        gw->painter->setFont( QFont( "Times", 18, QFont::Bold ) );
-        gw->painter->drawText( 430, 380, QString( "Points: " + str.number( points ) ) );
-        gw->painter->end();
-    }*/
-    qDebug() << "GP paint";
+    if ( !gameplayAlreadyStarted ) {
+        gameplayAlreadyStarted = true;
+        timer4Apple->start( COLOR_INTERVAL );
+    }
     gw->painter->begin( gw );
     gw->painter->drawPixmap( gw->rect(), QPixmap( ":/images/Images/gameplay_bg.png" ) );
     gw->painter->drawImage( 32, 15, button_back );
@@ -281,5 +250,11 @@ void Gameplay::continueGame()
 {
     timer->start( MAIN_INTERVAL );
     gamePaused = false;
+    gw->update();
+}
+
+void Gameplay::appleColorChange()
+{
+    dynamic_cast<Apple *>( apple )->setColorOffset( ++colorAppleTime );
     gw->update();
 }

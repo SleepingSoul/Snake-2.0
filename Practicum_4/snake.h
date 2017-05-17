@@ -22,6 +22,7 @@ private:
     GameWidget *gw;
     QVector<QPoint> pathVec;
     DIRECTION dir;
+    DIRECTION tailDir;
     QPoint lastPointBeforeTail;
 };
 

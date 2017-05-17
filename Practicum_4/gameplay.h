@@ -18,6 +18,7 @@ public:
 public slots:
     void gameStep();
     void holdingKey();
+    void appleColorChange();
 private:
     void gameOver();
     void pause();
@@ -32,18 +33,20 @@ private:
     GameplayObject *apple{ nullptr };
     QTimer *timer;
     QTimer *timer4key;
-    QTimer *speedMovingTimer;
+    QTimer *timer4Apple;
     unsigned points;
     unsigned keyAlreadyHoldedTime;
+    unsigned colorAppleTime;
     QRect backRect;
     QRect pauseRect;
     bool keyAlreadyPressed;
     const unsigned MAIN_INTERVAL;
     const unsigned BOOST_INTERVAL;
     const unsigned PUSHING_TIME;
-    const unsigned FAST_INTERVAL;
+    const unsigned COLOR_INTERVAL;
     bool gameIsOver;
     bool gamePaused;
+    bool gameplayAlreadyStarted;
 };
 
 #endif // GAMEPLAY_H
