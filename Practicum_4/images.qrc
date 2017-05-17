@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>Images/button_back.png</file>
+        <file>Images/button_exit.png</file>
+        <file>Images/button_newgame.png</file>
+        <file>Images/button_results.png</file>
+        <file>Images/gameplay_bg.png</file>
+        <file>Images/loaded_pic.png</file>
+        <file>Images/loading_snake.png</file>
+        <file>Images/main_pic.png</file>
+        <file>Images/scrreen_results.png</file>
+        <file>Images/field.png</file>
+        <file>Images/apple.png</file>
+        <file>Images/gameover.png</file>
+        <file>Images/button_pause.png</file>
+        <file>Images/button_continue.png</file>
+    </qresource>
+</RCC>
