@@ -9,7 +9,9 @@ Apple::Apple( GameWidget *gw ) : gw( gw )
     int y = rand() % 22;
     coords = QPoint( x * 30 + 32, y * 30 + 74 );
     startColorValue = rand() % 255;
-    blackHole = QImage( ":/images/Images/black_hole.png" );
+    blackHole.load( ":/images/Images/black_hole.png" );
+    pieceOfBackground.load( ":/images/Images/field.png" );
+    southwestPoint = QPoint( 32, 734 );
 }
 
 unsigned Apple::count = 0;
@@ -31,8 +33,10 @@ void Apple::paintGameplayObject()
     gw->painter->setRenderHint( QPainter::Antialiasing, true );
     gw->painter->setPen( Qt::NoPen );
     gw->painter->setBrush( appleBrush );
-    gw->painter->drawImage( coords.x() - 15, coords.y() - 15, blackHole );
-    gw->painter->drawEllipse( QPoint( coords.x() + 15, coords.y() + 15 ), 8, 8 );
+    gw->painter->translate( coords.x() + 15, coords.y() + 15 );
+    gw->painter->rotate( colorOffset );
+    gw->painter->drawImage( -30, -30, blackHole );
+    gw->painter->drawEllipse( QPoint( 0, 0 ), 8, 8 );
     gw->painter->end();
 }
 

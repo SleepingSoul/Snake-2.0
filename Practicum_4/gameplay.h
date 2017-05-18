@@ -31,6 +31,7 @@ private:
     GameplayObject *field{ nullptr };
     GameplayObject *snake{ nullptr };
     GameplayObject *apple{ nullptr };
+    GameplayObject *wormhole{ nullptr };
     QTimer *timer;
     QTimer *timer4key;
     QTimer *timer4Apple;

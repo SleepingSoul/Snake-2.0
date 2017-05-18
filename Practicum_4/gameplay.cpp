@@ -4,6 +4,7 @@
 #include "snake.h"
 #include "wall.h"
 #include "apple.h"
+#include "wormhole.h"
 #include <cassert>
 #include <string>
 
@@ -25,8 +26,10 @@ Gameplay::Gameplay( GameWidget *gw ) : gw( gw ), points( 0 ), keyAlreadyPressed(
         if ( apple != nullptr )
             delete apple;
         apple = GameplayObject::createObject( APPLE, gw );
+        wormhole = GameplayObject::createObject( WORMHOLE, gw );
         foreach ( QPoint x, dynamic_cast<Snake *>( snake )->getSnake() )
-            if ( x == dynamic_cast<Apple *>( apple )->getCoords() ) {
+            if ( x == dynamic_cast<Apple *>( apple )->getCoords() ||
+                 x == dynamic_cast<Wormhole *>( wormhole )->getCoords() ) {
                 intersected = true;
                 break;
             }
@@ -83,6 +86,7 @@ void Gameplay::paint()
     wall->paintGameplayObject();
     snake->paintGameplayObject();
     apple->paintGameplayObject();
+    wormhole->paintGameplayObject();
 
     if ( gameIsOver ) {
         gw->painter->begin( gw );
@@ -94,6 +98,7 @@ void Gameplay::paint()
         wall->paintGameplayObject();
         snake->paintGameplayObject();
         apple->paintGameplayObject();
+        wormhole->paintGameplayObject();
 
         gw->painter->begin( gw );
         gw->painter->drawImage( 350, 220, QImage( ":/images/Images/gameover.png" ) );
@@ -162,14 +167,17 @@ void Gameplay::gameStep()
         if ( dynamic_cast<Snake *>( snake )->getHead() == dynamic_cast<Apple *>( apple )->getCoords() ) {
             dynamic_cast<Snake *>( snake )->grow();
             points++;
+            dynamic_cast<Snake *>( snake )->move( dynamic_cast<Wormhole *>( wormhole )->getCoords() );
 
             bool intersected;
             do {
                 intersected = false;
                 delete apple;
                 apple = GameplayObject::createObject( APPLE, gw );
+                wormhole = GameplayObject::createObject( WORMHOLE, gw );
                 foreach ( QPoint x, dynamic_cast<Snake *>( snake )->getSnake() ) {
-                    if ( x == dynamic_cast<Apple *>( apple )->getCoords() ) {
+                    if ( x == dynamic_cast<Apple *>( apple )->getCoords() ||
+                         x == dynamic_cast<Wormhole *>( wormhole )->getCoords() ) {
                         intersected = true;
                         break;
                     }

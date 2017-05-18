@@ -34,7 +34,8 @@ SOURCES += main.cpp \
     wall.cpp \
     field.cpp \
     snake.cpp \
-    apple.cpp
+    apple.cpp \
+    wormhole.cpp
 
 HEADERS  += \
     game.h \
@@ -48,7 +49,8 @@ HEADERS  += \
     wall.h \
     field.h \
     snake.h \
-    apple.h
+    apple.h \
+    wormhole.h
 
 RESOURCES += \
     images.qrc

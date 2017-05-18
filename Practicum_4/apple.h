@@ -17,9 +17,11 @@ private:
     QPoint coords;
     QBrush appleBrush;
     QImage blackHole;
+    QImage pieceOfBackground;
     static unsigned count;
     unsigned colorOffset;
     unsigned startColorValue;
+    QPoint southwestPoint;
 };
 
 #endif // APPLE_H

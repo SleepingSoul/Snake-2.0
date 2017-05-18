@@ -3,7 +3,7 @@
 
 #include "gamewidget.h"
 
-enum OBJECT_ID{ WALL = 0, FIELD, SNAKE, APPLE };
+enum OBJECT_ID{ WALL = 0, FIELD, SNAKE, APPLE, WORMHOLE };
 
 class GameplayObject {
 public:

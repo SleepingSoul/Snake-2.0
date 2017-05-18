@@ -107,6 +107,24 @@ void Snake::move()
     pathVec.removeLast();
 }
 
+void Snake::move( QPoint movePoint )
+{
+    pathVec.push_front( movePoint );
+
+    // setting tail direction
+    if ( pathVec.last().x() - pathVec[ pathVec.size() - 2 ].x() == -30 )
+        tailDir = RIGHT;
+    else if ( pathVec.last().x() - pathVec[ pathVec.size() - 2 ].x() == 30 )
+        tailDir = LEFT;
+    if ( pathVec.last().y() - pathVec[ pathVec.size() - 2 ].y() == -30 )
+        tailDir = BACKWARD;
+    else if ( pathVec.last().y() - pathVec[ pathVec.size() - 2 ].y() == 30 )
+        tailDir = FORWARD;
+
+    lastPointBeforeTail = pathVec.last();
+    pathVec.removeLast();
+}
+
 QPoint Snake::getHead()
 {
     return pathVec[ 0 ];

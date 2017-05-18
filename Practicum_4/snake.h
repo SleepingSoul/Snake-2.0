@@ -15,6 +15,7 @@ public:
     void changeDirection( DIRECTION );
     DIRECTION getDirection();
     void move();
+    void move( QPoint );
     QPoint getHead();
     QVector<QPoint> getSnake();
     void grow();
