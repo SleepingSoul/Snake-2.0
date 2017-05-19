@@ -28,6 +28,8 @@ private:
     DIRECTION dir;
     DIRECTION tailDir;
     QPoint lastPointBeforeTail;
+    bool isRupture( QPoint, QPoint ) const;
+    void updateDrawingVec();
 };
 
 #endif // SNAKE_H

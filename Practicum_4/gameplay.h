@@ -27,7 +27,6 @@ private:
     void pause();
     void continueGame();
     bool tryToMoveSnake();
-    bool isRupture( QPoint, QPoint );
     Apple *getAppleOnFreeSpace();
     Wormhole *getWormholeOnFreeSpace();
     GameWidget *gw;

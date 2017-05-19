@@ -15,5 +15,6 @@
         <file>Images/button_pause.png</file>
         <file>Images/button_continue.png</file>
         <file>Images/black_hole.png</file>
+        <file>Images/wormhole.png</file>
     </qresource>
 </RCC>

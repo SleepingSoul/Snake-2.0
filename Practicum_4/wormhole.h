@@ -9,10 +9,12 @@ public:
     virtual ~Wormhole();
     void paintGameplayObject() override;
     QPoint getCoords() const;
+    void setColorOffset( unsigned );
 private:
     GameWidget *gw;
     QImage wormholeImage;
     QPoint coords;
+    unsigned colorOffset;
 };
 
 #endif // WORMHOLE_H

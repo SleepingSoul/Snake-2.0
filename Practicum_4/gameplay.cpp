@@ -143,15 +143,6 @@ void Gameplay::gameStep()
             for ( int i = 1; i < vec.size(); i++ ) { // collision testing
                 if ( vec[ 0 ] == vec[ i ] )
                     gameOver();
-                if ( isRupture( vec[ i - 1 ], vec[ i ] ) ) {
-                    qDebug() << "Hello.Hello.Hello.";
-                    dynamic_cast<Snake *>( snake )->setAdditionalDrawing( vec[ i ], DRAW_WORMHOLE );
-                    dynamic_cast<Snake *>( snake )->setAdditionalDrawing( vec[ i - 1 ], DRAW_WORMHOLE );
-                }
-                if ( !isRupture( vec[ i - 1 ], vec[ i ] ) ) {
-                    dynamic_cast<Snake *>( snake )->setAdditionalDrawing( vec[ i ], NOTHING );
-                    //dynamic_cast<Snake *>( snake )->setAdditionalDrawing( vec[ i - 1 ], NOTHING );
-                }
             }
 
         }
@@ -255,6 +246,7 @@ void Gameplay::continueGame()
 void Gameplay::appleColorChange()
 {
     dynamic_cast<Apple *>( apple )->setColorOffset( ++colorAppleTime );
+    dynamic_cast<Wormhole *>( wormhole )->setColorOffset( ++colorAppleTime );
     gw->update();
 }
 
@@ -281,12 +273,5 @@ bool Gameplay::tryToMoveSnake()
     default:
         assert( false );
     }
-    return true;
-}
-
-bool Gameplay::isRupture( QPoint p_one, QPoint p_two )
-{
-    if ( std::sqrt( std::pow( p_one.x() - p_two.x(), 2) + std::pow( p_one.y() - p_two.y(), 2 ) ) == 30 )
-        return false;
     return true;
 }

@@ -1,6 +1,8 @@
 #include "snake.h"
 #include <cassert>
 #include <exception>
+#include <cmath>
+#include <ctime>
 
 Snake::Snake( GameWidget *gw ) : gw( gw ), dir( FORWARD ), tailDir( FORWARD )
 {
@@ -21,26 +23,42 @@ void Snake::paintGameplayObject()
 {
     gw->painter->begin( gw );
     gw->painter->setRenderHint( QPainter::Antialiasing, true );
-    gw->painter->setBrush( QBrush( Qt::yellow ) );
     gw->painter->setPen( Qt::NoPen );
 
     switch ( dir ) {
     case FORWARD:
+        gw->painter->setBrush( QBrush( QColor( 173, 216, 230 ) ) );
         gw->painter->drawEllipse( QPoint( getHead().x() + 15, getHead().y() ), 15, 10 );
+        gw->painter->setBrush( QBrush( Qt::black ) );
+        gw->painter->drawEllipse( QPoint( getHead().x() + 7, getHead().y() - 3 ), 3, 3 );
+        gw->painter->drawEllipse( QPoint( getHead().x() + 23, getHead().y() - 3 ), 3, 3 );
         break;
     case BACKWARD:
+        gw->painter->setBrush( QBrush( QColor( 173, 216, 230 ) ) );
         gw->painter->drawEllipse( QPoint( getHead().x() + 15, getHead().y() + 30 ), 15, 10 );
+        gw->painter->setBrush( QBrush( Qt::black ) );
+        gw->painter->drawEllipse( QPoint( getHead().x() + 7, getHead().y() + 33 ), 3, 3 );
+        gw->painter->drawEllipse( QPoint( getHead().x() + 23, getHead().y() + 33 ), 3, 3 );
         break;
     case LEFT:
+        gw->painter->setBrush( QBrush( QColor( 173, 216, 230 ) ) );
         gw->painter->drawEllipse( QPoint( getHead().x(), getHead().y() + 15 ), 10, 15 );
+        gw->painter->setBrush( QBrush( Qt::black ) );
+        gw->painter->drawEllipse( QPoint( getHead().x() - 3, getHead().y() + 7 ), 3, 3 );
+        gw->painter->drawEllipse( QPoint( getHead().x() - 3, getHead().y() + 23 ), 3, 3 );
         break;
     case RIGHT:
+        gw->painter->setBrush( QBrush( QColor( 173, 216, 230 ) ) );
         gw->painter->drawEllipse( QPoint( getHead().x() + 30, getHead().y() + 15 ), 10, 15 );
+        gw->painter->setBrush( QBrush( Qt::black ) );
+        gw->painter->drawEllipse( QPoint( getHead().x() + 33, getHead().y() + 7 ), 3, 3 );
+        gw->painter->drawEllipse( QPoint( getHead().x() + 33, getHead().y() + 23 ), 3, 3 );
         break;
     default:
         assert( false );
     }
 
+    gw->painter->setBrush( QBrush( QColor( 173, 216, 230 ) ) );
     switch ( tailDir ) {
     case FORWARD:
         gw->painter->drawEllipse( QPoint( pathVec.last().x() + 15, pathVec.last().y() + 30 ), 15, 10 );
@@ -58,27 +76,18 @@ void Snake::paintGameplayObject()
         assert( false );
     }
 
+    updateDrawingVec();
+
     for ( int i = 0; i < pathVec.size(); i++ ) {
-        if ( pathParamsVec[ i ] == DRAW_APPLE ) {
-            //appleBrush = QBrush( QColor( 255, 255, ( 51 + colorOffset ) % 255 ) );
-            gw->painter->setRenderHint( QPainter::Antialiasing, true );
-            gw->painter->setPen( Qt::NoPen );
-            //gw->painter->setBrush( appleBrush );
-            //gw->painter->translate( x.x() + 15, x.y() + 15 );
-            //gw->painter->rotate( colorOffset / 10.0 );
-            gw->painter->drawImage( pathVec[ i ].x() - 30, pathVec[ i ].y() - 30,
-                                    QImage( ":/images/Images/black_hole.png" ) );
-            //gw->painter->drawEllipse( QPoint( 0, 0 ), 8, 8 );
-        }
-        if ( pathParamsVec[ i ] == DRAW_WORMHOLE ) {
-            gw->painter->setBrush( QBrush( Qt::blue ) );
-            gw->painter->drawEllipse( pathVec[ i ].x(), pathVec[ i ].y(), 40, 40 );
-        }
+        if ( pathParamsVec[ i ] == DRAW_WORMHOLE )
+            gw->painter->drawImage( pathVec[ i ].x() - 20, pathVec[ i ].y() - 20, QImage( ":/images/Images/wormhole.png" ) );
+        else if ( pathParamsVec[ i ] == DRAW_APPLE )
+            gw->painter->drawImage( pathVec[ i ].x() - 15, pathVec[ i ].y() - 15, QImage( ":/images/Images/black_hole.png" ) );
     }
     foreach ( QPoint x, pathVec ) {
-        gw->painter->setBrush( QBrush( Qt::yellow ) );
+        gw->painter->setBrush( QBrush( QColor( 173, 216, 230 ) ) );
         gw->painter->drawRect( x.x(), x.y(), 30, 30 );
-        gw->painter->setBrush( Qt::black );
+        gw->painter->setBrush( QBrush( Qt::black ) );
         gw->painter->drawEllipse( QPoint( x.x() + 15, x.y() + 15 ), 7, 7 );
     }
     gw->painter->end();
@@ -169,4 +178,32 @@ void Snake::setAdditionalDrawing( QPoint x, ADDITIONAL_DRAWING ad )
         }
     i++;
     }
+}
+
+bool Snake::isRupture( QPoint p_one, QPoint p_two ) const
+{
+    if ( std::sqrt( std::pow( p_one.x() - p_two.x(), 2) + std::pow( p_one.y() - p_two.y(), 2 ) ) == 30 )
+        return false;
+    return true;
+}
+
+void Snake::updateDrawingVec()
+{
+    for ( int i = 1; i < pathVec.size(); i++ ) {
+        if ( isRupture( pathVec[ i - 1 ], pathVec[ i ] ) ) {
+            pathParamsVec[ i - 1 ] = DRAW_WORMHOLE;
+            pathParamsVec[ i ] = DRAW_APPLE;
+            i++;
+        }
+        else {
+            pathParamsVec[ i - 1 ] = NOTHING;
+            pathParamsVec[ i ] = NOTHING;
+        }
+    }
+    if ( !isRupture( pathVec[ 0 ], pathVec[ 1 ] ) ) {
+        pathParamsVec[ 0 ] = NOTHING;
+        pathParamsVec[ 1 ] = NOTHING;
+    }
+    if ( isRupture( pathVec[ 1 ], pathVec[ 2 ] ) )
+        pathParamsVec[ 1 ] = DRAW_WORMHOLE;
 }
