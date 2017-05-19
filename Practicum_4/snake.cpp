@@ -1,9 +1,12 @@
 #include "snake.h"
 #include <cassert>
+#include <exception>
 
 Snake::Snake( GameWidget *gw ) : gw( gw ), dir( FORWARD ), tailDir( FORWARD )
 {
     pathVec.reserve( 1000 );
+    pathParamsVec.resize( 1000 );
+    pathParamsVec.fill( NOTHING );
     pathVec.append( QPoint( 32, 644 ) );
     pathVec.append( QPoint( 32, 674 ) );
     pathVec.append( QPoint( 32, 704 ) );
@@ -55,13 +58,29 @@ void Snake::paintGameplayObject()
         assert( false );
     }
 
+    for ( int i = 0; i < pathVec.size(); i++ ) {
+        if ( pathParamsVec[ i ] == DRAW_APPLE ) {
+            //appleBrush = QBrush( QColor( 255, 255, ( 51 + colorOffset ) % 255 ) );
+            gw->painter->setRenderHint( QPainter::Antialiasing, true );
+            gw->painter->setPen( Qt::NoPen );
+            //gw->painter->setBrush( appleBrush );
+            //gw->painter->translate( x.x() + 15, x.y() + 15 );
+            //gw->painter->rotate( colorOffset / 10.0 );
+            gw->painter->drawImage( pathVec[ i ].x() - 30, pathVec[ i ].y() - 30,
+                                    QImage( ":/images/Images/black_hole.png" ) );
+            //gw->painter->drawEllipse( QPoint( 0, 0 ), 8, 8 );
+        }
+        if ( pathParamsVec[ i ] == DRAW_WORMHOLE ) {
+            gw->painter->setBrush( QBrush( Qt::blue ) );
+            gw->painter->drawEllipse( pathVec[ i ].x(), pathVec[ i ].y(), 40, 40 );
+        }
+    }
     foreach ( QPoint x, pathVec ) {
         gw->painter->setBrush( QBrush( Qt::yellow ) );
         gw->painter->drawRect( x.x(), x.y(), 30, 30 );
         gw->painter->setBrush( Qt::black );
         gw->painter->drawEllipse( QPoint( x.x() + 15, x.y() + 15 ), 7, 7 );
     }
-
     gw->painter->end();
 }
 
@@ -138,4 +157,16 @@ QVector<QPoint> Snake::getSnake()
 void Snake::grow()
 {
     pathVec.push_back( lastPointBeforeTail );
+}
+
+void Snake::setAdditionalDrawing( QPoint x, ADDITIONAL_DRAWING ad )
+{
+    int i = 0;
+    foreach ( QPoint sp, pathVec ) {
+        if ( sp == x ) {
+            pathParamsVec[ i ] = ad;
+            return;
+        }
+    i++;
+    }
 }

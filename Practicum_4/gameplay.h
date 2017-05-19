@@ -4,6 +4,9 @@
 #include <state.h>
 #include <QTimer>
 #include "gameplayobject.h"
+#include "apple.h"
+#include "wormhole.h"
+#include "snake.h"
 
 class Gameplay : public State {
     Q_OBJECT
@@ -15,7 +18,7 @@ public:
     void mouseReleased( QMouseEvent * ) override;
     void keyPressed( QKeyEvent * ) override;
     void keyReleased( QKeyEvent * ) override;
-public slots:
+private slots:
     void gameStep();
     void holdingKey();
     void appleColorChange();
@@ -23,6 +26,10 @@ private:
     void gameOver();
     void pause();
     void continueGame();
+    bool tryToMoveSnake();
+    bool isRupture( QPoint, QPoint );
+    Apple *getAppleOnFreeSpace();
+    Wormhole *getWormholeOnFreeSpace();
     GameWidget *gw;
     QImage button_back;
     QImage button_pause;

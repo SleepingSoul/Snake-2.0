@@ -14,7 +14,7 @@ public:
     void mouseReleased( QMouseEvent * ) override {}
     void keyPressed( QKeyEvent * ) override {};
     void keyReleased( QKeyEvent * ) override {}
-public slots:
+private slots:
     void loading();
 private:
     GameWidget *gw;

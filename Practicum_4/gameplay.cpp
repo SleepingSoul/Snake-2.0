@@ -5,8 +5,10 @@
 #include "wall.h"
 #include "apple.h"
 #include "wormhole.h"
+#include "snake.h"
 #include <cassert>
 #include <string>
+#include <cmath>
 
 Gameplay::Gameplay( GameWidget *gw ) : gw( gw ), points( 0 ), keyAlreadyPressed( false ), keyAlreadyHoldedTime( 0 ),
     colorAppleTime( 0 ), MAIN_INTERVAL( 325 ), BOOST_INTERVAL( 100 ), PUSHING_TIME( 250 ), COLOR_INTERVAL( 10 ),
@@ -132,36 +134,25 @@ void Gameplay::gameStep()
     keyAlreadyHoldedTime = 0;
     keyAlreadyPressed = false;
 
-    static QVector<QPoint> frontVec = dynamic_cast<Wall *>( wall )->getFronts();
-    bool poss = true; //possibility to move
-    switch ( dynamic_cast<Snake *>( snake )->getDirection() ) {
-    case FORWARD:
-        if ( frontVec[ 1 ].y() >= dynamic_cast<Snake *>( snake )->getHead().y() )
-            poss = false;
-        break;
-    case BACKWARD:
-        if ( frontVec[ 0 ].y() <= dynamic_cast<Snake *>( snake )->getHead().y() + 30 )
-            poss = false;
-        break;
-    case LEFT:
-        if ( frontVec[ 0 ].x() >= dynamic_cast<Snake *>( snake )->getHead().x() )
-            poss = false;
-        break;
-    case RIGHT:
-        if ( frontVec[ 2 ].x() <= dynamic_cast<Snake *>( snake )->getHead().x() + 30 )
-            poss = false;
-        break;
-    default:
-        assert( false );
-    }
+    bool canMove = tryToMoveSnake(); //possibility to move
 
-    if ( poss ) {
+    if ( canMove ) {
         dynamic_cast<Snake *>( snake )->move();
         {
             QVector<QPoint> vec = dynamic_cast<Snake *>( snake )->getSnake();
-            for ( int i = 1; i < vec.size(); i++ )
+            for ( int i = 1; i < vec.size(); i++ ) { // collision testing
                 if ( vec[ 0 ] == vec[ i ] )
                     gameOver();
+                if ( isRupture( vec[ i - 1 ], vec[ i ] ) ) {
+                    qDebug() << "Hello.Hello.Hello.";
+                    dynamic_cast<Snake *>( snake )->setAdditionalDrawing( vec[ i ], DRAW_WORMHOLE );
+                    dynamic_cast<Snake *>( snake )->setAdditionalDrawing( vec[ i - 1 ], DRAW_WORMHOLE );
+                }
+                if ( !isRupture( vec[ i - 1 ], vec[ i ] ) ) {
+                    dynamic_cast<Snake *>( snake )->setAdditionalDrawing( vec[ i ], NOTHING );
+                    //dynamic_cast<Snake *>( snake )->setAdditionalDrawing( vec[ i - 1 ], NOTHING );
+                }
+            }
 
         }
         if ( dynamic_cast<Snake *>( snake )->getHead() == dynamic_cast<Apple *>( apple )->getCoords() ) {
@@ -190,7 +181,7 @@ void Gameplay::gameStep()
     {
         gameOver();
     }
-    gw->update();
+    //gw->update();
 }
 
 void Gameplay::keyPressed( QKeyEvent *event )
@@ -265,4 +256,37 @@ void Gameplay::appleColorChange()
 {
     dynamic_cast<Apple *>( apple )->setColorOffset( ++colorAppleTime );
     gw->update();
+}
+
+bool Gameplay::tryToMoveSnake()
+{
+    static QVector<QPoint> frontVec = dynamic_cast<Wall *>( wall )->getFronts();
+    switch ( dynamic_cast<Snake *>( snake )->getDirection() ) {
+    case FORWARD:
+        if ( frontVec[ 1 ].y() >= dynamic_cast<Snake *>( snake )->getHead().y() )
+            return false;
+        break;
+    case BACKWARD:
+        if ( frontVec[ 0 ].y() <= dynamic_cast<Snake *>( snake )->getHead().y() + 30 )
+            return false;
+        break;
+    case LEFT:
+        if ( frontVec[ 0 ].x() >= dynamic_cast<Snake *>( snake )->getHead().x() )
+            return false;
+        break;
+    case RIGHT:
+        if ( frontVec[ 2 ].x() <= dynamic_cast<Snake *>( snake )->getHead().x() + 30 )
+            return false;
+        break;
+    default:
+        assert( false );
+    }
+    return true;
+}
+
+bool Gameplay::isRupture( QPoint p_one, QPoint p_two )
+{
+    if ( std::sqrt( std::pow( p_one.x() - p_two.x(), 2) + std::pow( p_one.y() - p_two.y(), 2 ) ) == 30 )
+        return false;
+    return true;
 }
