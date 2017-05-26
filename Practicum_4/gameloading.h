@@ -11,8 +11,10 @@ public:
     virtual ~GameLoading();
     void paint() override;
     void nextState() override;
+
+    // useless in this class
     void mouseReleased( QMouseEvent * ) override {}
-    void keyPressed( QKeyEvent * ) override {};
+    void keyPressed( QKeyEvent * ) override {}
     void keyReleased( QKeyEvent * ) override {}
 private slots:
     void loading();

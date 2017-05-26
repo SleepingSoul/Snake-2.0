@@ -1,10 +1,9 @@
 #ifndef FIELD_H
 #define FIELD_H
-
-#include "gameplayobject.h"
-#include <QImage>
 #define FIELD_WIDTH 32
 #define FIELD_HEIGHT 22
+
+#include "gameplayobject.h"
 
 class Field : public GameplayObject {
 public:

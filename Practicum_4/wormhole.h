@@ -9,6 +9,7 @@ public:
     virtual ~Wormhole();
     void paintGameplayObject() override;
     QPoint getCoords() const;
+    void setCoords( QPoint );
     void setColorOffset( unsigned );
 private:
     GameWidget *gw;

@@ -14,12 +14,15 @@ public:
     void paint() override;
     void nextState() override;
     void mouseReleased( QMouseEvent * ) override;
+
+    // useless in this class:
     void keyPressed( QKeyEvent * ) override {}
     void keyReleased( QKeyEvent * ) override {}
 private slots:
     void btnloading();
 private:
     GameWidget *gw;
+    QImage background;
     QImage button_newgame;
     QImage button_results;
     QImage button_exit;

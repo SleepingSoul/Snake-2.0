@@ -2,7 +2,6 @@
 #include <cassert>
 #include <exception>
 #include <cmath>
-#include <ctime>
 
 Snake::Snake( GameWidget *gw ) : gw( gw ), dir( FORWARD ), tailDir( FORWARD )
 {
@@ -12,6 +11,8 @@ Snake::Snake( GameWidget *gw ) : gw( gw ), dir( FORWARD ), tailDir( FORWARD )
     pathVec.append( QPoint( 32, 644 ) );
     pathVec.append( QPoint( 32, 674 ) );
     pathVec.append( QPoint( 32, 704 ) );
+    wormholeImage.load( ":/images/Images/wormhole.png"  );
+    appleImage.load( ":/images/Images/black_hole.png" );
 }
 
 Snake::~Snake()
@@ -80,9 +81,9 @@ void Snake::paintGameplayObject()
 
     for ( int i = 0; i < pathVec.size(); i++ ) {
         if ( pathParamsVec[ i ] == DRAW_WORMHOLE )
-            gw->painter->drawImage( pathVec[ i ].x() - 20, pathVec[ i ].y() - 20, QImage( ":/images/Images/wormhole.png" ) );
+            gw->painter->drawImage( pathVec[ i ].x() - 20, pathVec[ i ].y() - 20, wormholeImage );
         else if ( pathParamsVec[ i ] == DRAW_APPLE )
-            gw->painter->drawImage( pathVec[ i ].x() - 15, pathVec[ i ].y() - 15, QImage( ":/images/Images/black_hole.png" ) );
+            gw->painter->drawImage( pathVec[ i ].x() - 15, pathVec[ i ].y() - 15, appleImage );
     }
     foreach ( QPoint x, pathVec ) {
         gw->painter->setBrush( QBrush( QColor( 173, 216, 230 ) ) );
@@ -98,7 +99,7 @@ void Snake::changeDirection( DIRECTION newDir )
     dir = newDir;
 }
 
-DIRECTION Snake::getDirection()
+DIRECTION Snake::getDirection() const
 {
     return dir;
 }
@@ -153,12 +154,12 @@ void Snake::move( QPoint movePoint )
     pathVec.removeLast();
 }
 
-QPoint Snake::getHead()
+QPoint Snake::getHead() const
 {
     return pathVec[ 0 ];
 }
 
-QVector<QPoint> Snake::getSnake()
+QVector<QPoint> Snake::getSnake() const
 {
     return pathVec;
 }
@@ -170,17 +171,13 @@ void Snake::grow()
 
 void Snake::setAdditionalDrawing( QPoint x, ADDITIONAL_DRAWING ad )
 {
-    int i = 0;
-    foreach ( QPoint sp, pathVec ) {
-        if ( sp == x ) {
-            pathParamsVec[ i ] = ad;
-            return;
-        }
-    i++;
-    }
+    if ( pathVec.contains( x ) )
+        pathParamsVec[ pathVec.indexOf( x ) ] = ad;
+    else
+        assert( "Tried to set drawing to incorrect point (point is not exist in snake vec)" );
 }
 
-bool Snake::isRupture( QPoint p_one, QPoint p_two ) const
+bool Snake::isRupture( const QPoint p_one, const QPoint p_two ) const
 {
     if ( std::sqrt( std::pow( p_one.x() - p_two.x(), 2) + std::pow( p_one.y() - p_two.y(), 2 ) ) == 30 )
         return false;

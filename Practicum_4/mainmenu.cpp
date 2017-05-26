@@ -8,6 +8,7 @@ MainMenu::MainMenu( GameWidget *gw ) : gw( gw ), load( 0 ), oscillationCount_new
     oscillationCount_results( 0 ), oscillationCount_exit( 0 ), coeff_newgame( 100 ),
     coeff_results( 100 ), coeff_exit( 100 )
 {
+    background.load( ":/images/Images/loaded_pic.png" );
     button_newgame.load( ":/images/Images/button_newgame.png" );
     button_results.load( ":/images/Images/button_results.png" );
     button_exit.load( ":/images/Images/button_exit.png" );
@@ -31,7 +32,7 @@ void MainMenu::paint()
 {
     qDebug() << "MM paint";
     gw->painter->begin( gw );
-    gw->painter->drawPixmap( gw->rect(), QPixmap( ":/images/Images/loaded_pic.png" ) );
+    gw->painter->drawImage( gw->rect(), background );
 
     if ( load <= rect_newgame.width() )
         gw->painter->drawImage( rect_newgame.x(), rect_newgame.y(), button_newgame, 0, 0, load, rect_newgame.height() );

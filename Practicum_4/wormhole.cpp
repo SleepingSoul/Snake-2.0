@@ -1,13 +1,8 @@
 #include "wormhole.h"
-#include <ctime>
-#include <cstdlib>
+#include <cassert>
 
-Wormhole::Wormhole( GameWidget *gw ) : gw( gw ), colorOffset( 0 )
+Wormhole::Wormhole( GameWidget *gw ) : gw( gw ), colorOffset( 0 ), coords( QPoint( -1, -1 ) )
 {
-    srand( ::time( 0 ) + 1 );
-    int x = rand() % 32;
-    int y = rand() % 22;
-    coords = QPoint( x * 30 + 32, y * 30 + 74 );
     wormholeImage.load( ":/images/Images/wormhole.png" );
 }
 
@@ -18,6 +13,8 @@ Wormhole::~Wormhole()
 
 void Wormhole::paintGameplayObject()
 {
+    if ( coords == QPoint( -1, -1 ) )
+        assert( "try to paint wormhole without set coords!" );
     gw->painter->begin( gw );
     gw->painter->translate( coords.x() + 15, coords.y() + 15 );
     gw->painter->rotate( colorOffset / 3 );
@@ -33,4 +30,9 @@ QPoint Wormhole::getCoords() const
 void Wormhole::setColorOffset( unsigned offset )
 {
     colorOffset = offset;
+}
+
+void Wormhole::setCoords( QPoint newCoords )
+{
+    coords = newCoords;
 }

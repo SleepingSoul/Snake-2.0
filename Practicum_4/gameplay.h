@@ -1,8 +1,7 @@
 #ifndef GAMEPLAY_H
 #define GAMEPLAY_H
 
-#include <state.h>
-#include <QTimer>
+#include "state.h"
 #include "gameplayobject.h"
 #include "apple.h"
 #include "wormhole.h"
@@ -26,7 +25,11 @@ private:
     void gameOver();
     void pause();
     void continueGame();
-    bool tryToMoveSnake();
+    bool tryToMoveSnake() const;
+    void updateFieldPoints();
+    void createBasicGameplayObjects();
+    void getAppleAndWormholeOnFreeSpace();
+    void paintAllGameplayObjects();
     Apple *getAppleOnFreeSpace();
     Wormhole *getWormholeOnFreeSpace();
     GameWidget *gw;
@@ -46,7 +49,6 @@ private:
     unsigned colorAppleTime;
     QRect backRect;
     QRect pauseRect;
-    bool keyAlreadyPressed;
     const unsigned MAIN_INTERVAL;
     const unsigned BOOST_INTERVAL;
     const unsigned PUSHING_TIME;
@@ -54,6 +56,8 @@ private:
     bool gameIsOver;
     bool gamePaused;
     bool gameplayAlreadyStarted;
+    bool keyAlreadyPressed;
+    bool fieldPoints[ 32 ][ 22 ];
 };
 
 #endif // GAMEPLAY_H

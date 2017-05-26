@@ -26,24 +26,6 @@ Gameplay::Gameplay( GameWidget *gw ) : gw( gw ), points( 0 ), keyAlreadyPressed(
 
     getAppleAndWormholeOnFreeSpace();
 
-    /*
-    bool intersected;
-    do {
-        intersected = false;
-        if ( apple != nullptr )
-            delete apple;
-        apple = GameplayObject::createObject( APPLE, gw );
-        wormhole = GameplayObject::createObject( WORMHOLE, gw );
-        foreach ( QPoint x, dynamic_cast<Snake *>( snake )->getSnake() )
-            if ( x == dynamic_cast<Apple *>( apple )->getCoords() ||
-                 x == dynamic_cast<Wormhole *>( wormhole )->getCoords() ) {
-                intersected = true;
-                break;
-            }
-    }
-    while ( intersected );
-    */
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     timer = new QTimer( this );
     connect( timer, SIGNAL( timeout() ), this, SLOT( gameStep() ) );
     timer->start( MAIN_INTERVAL );

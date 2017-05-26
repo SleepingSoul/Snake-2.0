@@ -8,8 +8,10 @@ public:
     Results( class GameWidget * );
     virtual ~Results();
     void paint() override;
-    void nextState() override {};
     void mouseReleased( QMouseEvent * ) override;
+
+    // useless in this class:
+    void nextState() override {}
     void keyPressed( QKeyEvent * ) override {}
     void keyReleased( QKeyEvent * ) override {}
 private:

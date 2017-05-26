@@ -1,20 +1,11 @@
 #include "apple.h"
-#include <cstdlib>
-#include <ctime>
+#include <cassert>
 
-Apple::Apple( GameWidget *gw ) : gw( gw )
+Apple::Apple( GameWidget *gw ) : gw( gw ), coords( QPoint( -1, -1 ) )
 {
-    srand( ::time( 0 ) );
-    int x = rand() % 32;
-    int y = rand() % 22;
-    coords = QPoint( x * 30 + 32, y * 30 + 74 );
     startColorValue = rand() % 255;
     blackHole.load( ":/images/Images/black_hole.png" );
-    pieceOfBackground.load( ":/images/Images/field.png" );
-    southwestPoint = QPoint( 32, 734 );
 }
-
-unsigned Apple::count = 0;
 
 Apple::~Apple()
 {
@@ -28,6 +19,8 @@ void Apple::setColorOffset( unsigned offset )
 
 void Apple::paintGameplayObject()
 {
+    if ( coords == QPoint( -1, -1 ) )
+        assert( "try to paint apple without set coords!" );
     gw->painter->begin( gw );
     appleBrush = QBrush( QColor( 255, 255, ( 51 + colorOffset ) % 255 ) );
     gw->painter->setRenderHint( QPainter::Antialiasing, true );
@@ -40,7 +33,12 @@ void Apple::paintGameplayObject()
     gw->painter->end();
 }
 
-QPoint Apple::getCoords()
+QPoint Apple::getCoords() const
 {
     return coords;
+}
+
+void Apple::setCoords( QPoint newPoint )
+{
+    coords = newPoint;
 }
