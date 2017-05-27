@@ -21,6 +21,7 @@ private slots:
     void gameStep();
     void holdingKey();
     void appleColorChange();
+    //void gameOverCapacity(); maybe will make it afterward
 private:
     void gameOver();
     void pause();
@@ -30,12 +31,14 @@ private:
     void createBasicGameplayObjects();
     void getAppleAndWormholeOnFreeSpace();
     void paintAllGameplayObjects();
+    void paintPressEnterInGameOverState();
     Apple *getAppleOnFreeSpace();
     Wormhole *getWormholeOnFreeSpace();
     GameWidget *gw;
     QImage button_back;
     QImage button_pause;
     QImage button_continue;
+    QImage game_over_image;
     GameplayObject *wall{ nullptr };
     GameplayObject *field{ nullptr };
     GameplayObject *snake{ nullptr };
@@ -44,9 +47,11 @@ private:
     QTimer *timer;
     QTimer *timer4key;
     QTimer *timer4Apple;
+    QTimer *timer4GameOver;
     unsigned points;
     unsigned keyAlreadyHoldedTime;
     unsigned colorAppleTime;
+    unsigned gameOverCapacityNumber;
     QRect backRect;
     QRect pauseRect;
     const unsigned MAIN_INTERVAL;

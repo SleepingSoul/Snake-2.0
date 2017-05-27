@@ -7,43 +7,27 @@
 #include "wormhole.h"
 #include "snake.h"
 #include <cassert>
-#include <string>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
 
+#define Enter_key 16777220
+
 Gameplay::Gameplay( GameWidget *gw ) : gw( gw ), points( 0 ), keyAlreadyPressed( false ), keyAlreadyHoldedTime( 0 ),
     colorAppleTime( 0 ), MAIN_INTERVAL( 325 ), BOOST_INTERVAL( 100 ), PUSHING_TIME( 250 ), COLOR_INTERVAL( 10 ),
-    gameIsOver( false ), gamePaused( false ), gameplayAlreadyStarted( false )
+    gameIsOver( false ), gamePaused( false ), gameplayAlreadyStarted( false ), gameOverCapacityNumber( 0 )
 {
     srand( ::time( 0 ) );
 
     button_back.load( ":/images/Images/button_back.png" );
     button_pause.load( ":/images/Images/button_pause.png" );
     button_continue.load( ":/images/Images/button_continue.png" );
+    game_over_image.load( ":/images/Images/gameover.png" );
 
     createBasicGameplayObjects();
 
     getAppleAndWormholeOnFreeSpace();
 
-    /*
-    bool intersected;
-    do {
-        intersected = false;
-        if ( apple != nullptr )
-            delete apple;
-        apple = GameplayObject::createObject( APPLE, gw );
-        wormhole = GameplayObject::createObject( WORMHOLE, gw );
-        foreach ( QPoint x, dynamic_cast<Snake *>( snake )->getSnake() )
-            if ( x == dynamic_cast<Apple *>( apple )->getCoords() ||
-                 x == dynamic_cast<Wormhole *>( wormhole )->getCoords() ) {
-                intersected = true;
-                break;
-            }
-    }
-    while ( intersected );
-    */
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     timer = new QTimer( this );
     connect( timer, SIGNAL( timeout() ), this, SLOT( gameStep() ) );
     timer->start( MAIN_INTERVAL );
@@ -54,6 +38,8 @@ Gameplay::Gameplay( GameWidget *gw ) : gw( gw ), points( 0 ), keyAlreadyPressed(
     timer4Apple = new QTimer( this );
     connect( timer4Apple, SIGNAL( timeout() ), this, SLOT( appleColorChange() ) );
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    timer4GameOver = new QTimer( this );
+
     backRect = QRect( 32, 15, 213, 64 );
     pauseRect = QRect( 247, 15, 213, 64 );
 
@@ -73,6 +59,7 @@ Gameplay::~Gameplay()
     delete timer;
     delete timer4key;
     delete timer4Apple;
+    delete timer4GameOver;
     delete snake;
     delete wall;
     delete field;
@@ -82,7 +69,7 @@ Gameplay::~Gameplay()
 
 void Gameplay::paint()
 {
-    qDebug() << "GP paint";
+    //qDebug() << "GP paint";
     if ( !gameplayAlreadyStarted ) {
         gameplayAlreadyStarted = true;
         timer4Apple->start( COLOR_INTERVAL );
@@ -111,17 +98,19 @@ void Gameplay::paint()
         paintAllGameplayObjects();
 
         gw->painter->begin( gw );
-        gw->painter->drawImage( 350, 220, QImage( ":/images/Images/gameover.png" ) );
+        gw->painter->drawImage( 350, 220, game_over_image );
         gw->painter->setPen( Qt::white );
         gw->painter->setFont( QFont( "Times", 18, QFont::Bold ) );
         gw->painter->drawText( 430, 380, QString( "Points: " + str.number( points ) ) );
+        gw->painter->setFont( QFont( "Times", 12 ) );
+        gw->painter->drawText( 360, 415, QString( "Press enter to save the results." ) );
         gw->painter->end();
     }
 }
 
 void Gameplay::nextState()
 {
-    gw->setState( new Results( gw ) );
+    gw->setState( new Results( gw, points ) );
 }
 
 void Gameplay::mouseReleased( QMouseEvent *event )
@@ -205,8 +194,12 @@ void Gameplay::keyPressed( QKeyEvent *event )
                 keyAlreadyPressed = true;
                 timer4key->start( PUSHING_TIME );
             }
-        }
+            break;
+        }    
     }
+    if ( event->key() == Enter_key && gameIsOver )
+        nextState();
+    qDebug() << event->key();
 }
 
 void Gameplay::holdingKey()
@@ -283,14 +276,13 @@ void Gameplay::updateFieldPoints()
             fieldPoints[ i ][ j ] = false;
 
     foreach ( QPoint x, snakeTail )
-        fieldPoints[ x.x() / 30 ][ x.y() / 30 ] = true;
+        fieldPoints[ ( x.x() - 32 ) / 30 ][ ( x.y() - 74 ) / 30 ] = true;
 }
 
 Apple *Gameplay::getAppleOnFreeSpace()
 {
     Apple *tempApple = new Apple( gw );
     updateFieldPoints();
-    QPoint pos = tempApple->getCoords();
     QVector<int> tempVec;
 
     int xInd = rand() % 32;
@@ -308,7 +300,7 @@ Apple *Gameplay::getAppleOnFreeSpace()
                     tempVec.append( i );
         }
     }
-    int yInd = rand() % tempVec.size();
+    int yInd = tempVec[ rand() % tempVec.size() ];
     tempApple->setCoords( QPoint( 32 + xInd * 30, 74 + yInd * 30 ) );
     return tempApple;
 }
@@ -317,7 +309,6 @@ Wormhole *Gameplay::getWormholeOnFreeSpace()
 {
     Wormhole *tempWormhole = new Wormhole( gw );
     updateFieldPoints();
-    QPoint pos = tempWormhole->getCoords();
     QVector<int> tempVec;
 
     int xInd = rand() % 32;
@@ -335,7 +326,7 @@ Wormhole *Gameplay::getWormholeOnFreeSpace()
                     tempVec.append( i );
         }
     }
-    int yInd = rand() % tempVec.size();
+    int yInd = tempVec[ rand() % tempVec.size() ];
     tempWormhole->setCoords( QPoint( 32 + xInd * 30, 74 + yInd * 30 ) );
     return tempWormhole;
 }
@@ -361,3 +352,15 @@ void Gameplay::paintAllGameplayObjects()
     wormhole->paintGameplayObject();
     wall->paintGameplayObject();
 }
+/*
+void Gameplay::gameOverCapacity()
+{
+    gameOverCapacityNumber++;
+}
+
+void Gameplay::paintPressEnterInGameOverState()
+{
+    gw->painter->begin( gw );
+    gw->painter->drawText();
+    gw->painter->end();
+}*/

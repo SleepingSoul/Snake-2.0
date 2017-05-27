@@ -30,7 +30,7 @@ MainMenu::~MainMenu()
 
 void MainMenu::paint()
 {
-    qDebug() << "MM paint";
+    //qDebug() << "MM paint";
     gw->painter->begin( gw );
     gw->painter->drawImage( gw->rect(), background );
 
