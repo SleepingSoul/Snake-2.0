@@ -39,6 +39,7 @@ Gameplay::Gameplay( GameWidget *gw ) : gw( gw ), points( 0 ), keyAlreadyPressed(
     connect( timer4Apple, SIGNAL( timeout() ), this, SLOT( appleColorChange() ) );
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     timer4GameOver = new QTimer( this );
+    connect( timer4GameOver, SIGNAL( timeout() ), this, SLOT( gameOverCapacity() ) );
 
     backRect = QRect( 32, 15, 213, 64 );
     pauseRect = QRect( 247, 15, 213, 64 );
@@ -99,10 +100,13 @@ void Gameplay::paint()
 
         gw->painter->begin( gw );
         gw->painter->drawImage( 350, 220, game_over_image );
-        gw->painter->setPen( Qt::white );
+        gw->painter->setPen( QColor( 255, 255, 255 ) );
         gw->painter->setFont( QFont( "Times", 18, QFont::Bold ) );
         gw->painter->drawText( 430, 380, QString( "Points: " + str.number( points ) ) );
         gw->painter->setFont( QFont( "Times", 12 ) );
+        gw->painter->setPen( QColor( 255, 255, 255, ( gameOverCapacityNumber < 128 )?
+                                         gameOverCapacityNumber  : 255 - gameOverCapacityNumber ) );
+        gameOverCapacityNumber %= 254;
         gw->painter->drawText( 360, 415, QString( "Press enter to save the results." ) );
         gw->painter->end();
     }
@@ -218,6 +222,7 @@ void Gameplay::keyReleased( QKeyEvent * )
 void Gameplay::gameOver()
 {
     timer->stop();
+    timer4GameOver->start( 10 );
     gameIsOver = true;
 }
 
@@ -293,8 +298,8 @@ Apple *Gameplay::getAppleOnFreeSpace()
     }
     if ( tempVec.isEmpty() ) {
         while ( tempVec.isEmpty() ) {
-            xInd += 30;
-            xInd = xInd % 960;
+            xInd += 1;
+            xInd = xInd % 32;
             for ( int i = 0; i < 22; i++ )
                 if ( fieldPoints[ xInd ][ i ] == false )
                     tempVec.append( i );
@@ -319,8 +324,8 @@ Wormhole *Gameplay::getWormholeOnFreeSpace()
     }
     if ( tempVec.isEmpty() ) {
         while ( tempVec.isEmpty() ) {
-            xInd += 30;
-            xInd = xInd % 960;
+            xInd += 1;
+            xInd = xInd % 32;
             for ( int i = 0; i < 22; i++ )
                 if ( fieldPoints[ xInd ][ i ] == false )
                     tempVec.append( i );
@@ -352,15 +357,8 @@ void Gameplay::paintAllGameplayObjects()
     wormhole->paintGameplayObject();
     wall->paintGameplayObject();
 }
-/*
+
 void Gameplay::gameOverCapacity()
 {
     gameOverCapacityNumber++;
 }
-
-void Gameplay::paintPressEnterInGameOverState()
-{
-    gw->painter->begin( gw );
-    gw->painter->drawText();
-    gw->painter->end();
-}*/

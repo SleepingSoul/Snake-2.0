@@ -21,7 +21,7 @@ private slots:
     void gameStep();
     void holdingKey();
     void appleColorChange();
-    //void gameOverCapacity(); maybe will make it afterward
+    void gameOverCapacity();
 private:
     void gameOver();
     void pause();

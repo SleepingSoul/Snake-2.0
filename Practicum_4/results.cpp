@@ -2,6 +2,7 @@
 #include "mainmenu.h"
 #include <cassert>
 #include <QtAlgorithms>
+#define NODEBUG
 
 #define Enter_key 16777220
 #define Backspace_key 16777219
@@ -59,11 +60,8 @@ void Results::paint()
         unsigned points;
         char name[ 30 ];
         int i = 0;
-        QList<QString> resList;
-        QMap<unsigned, QString> namesAndPoints;
+        QMultiMap<unsigned, QString> namesAndPoints;
         while ( inResultsFile >> points >> name  ) {
-            QString str;
-            resList.append( QString( str.number( points ) + "        " + name ) );
             namesAndPoints.insert( points, QString( name ) );
         }
         QString str;

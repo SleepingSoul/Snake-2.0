@@ -5,7 +5,7 @@
 #include <QtMath>
 
 MainMenu::MainMenu( GameWidget *gw ) : gw( gw ), load( 0 ), oscillationCount_newgame( 0 ),
-    oscillationCount_results( 0 ), oscillationCount_exit( 0 ), coeff_newgame( 100 ),
+    oscillationCount_results( 0 ), oscillationCount_exit( 0 ), coeff_newgame( 125 ),
     coeff_results( 100 ), coeff_exit( 100 )
 {
     background.load( ":/images/Images/loaded_pic.png" );
@@ -18,7 +18,7 @@ MainMenu::MainMenu( GameWidget *gw ) : gw( gw ), load( 0 ), oscillationCount_new
 
     timer = new QTimer( this );
     connect( timer, SIGNAL( timeout() ), this, SLOT( btnloading() ) );
-    timer->start( 0.5 );
+    timer->start( 0.7 );
 
     gw->update();
 }
@@ -37,7 +37,7 @@ void MainMenu::paint()
     if ( load <= rect_newgame.width() )
         gw->painter->drawImage( rect_newgame.x(), rect_newgame.y(), button_newgame, 0, 0, load, rect_newgame.height() );
     else if ( oscillationCount_newgame++ < 100 ) {
-        gw->painter->drawImage( rect_newgame.x() + coeff_newgame * qSin( 0.035 * ( load - rect_newgame.width() ) ) , rect_newgame.y(), button_newgame );
+        gw->painter->drawImage( rect_newgame.x() + coeff_newgame * qSin( 0.015 * ( load - rect_newgame.width() ) ) , rect_newgame.y(), button_newgame );
         coeff_newgame -= 1;
     }
     else
@@ -46,7 +46,7 @@ void MainMenu::paint()
     if ( load <= rect_newgame.width() * 4.0 / 3.0 && load > rect_newgame.width() / 3 )
         gw->painter->drawImage( rect_results.x(), rect_results.y(), button_results, 0, 0, load - rect_results.width() / 3, rect_results.height() );
     else if ( load > rect_newgame.width() * 4.0 / 3.0 && oscillationCount_results++ < 100 ) {
-        gw->painter->drawImage( rect_results.x() + coeff_results * qSin( 0.035 * ( load - rect_results.width() * 4.0 / 3.0 ) ) ,
+        gw->painter->drawImage( rect_results.x() + coeff_results * qSin( 0.015 * ( load - rect_results.width() * 4.0 / 3.0 ) ) ,
                            rect_results.y(), button_results );
         coeff_results -= 1;
     }
@@ -56,7 +56,7 @@ void MainMenu::paint()
     if ( load <= rect_newgame.width() * 5.0 / 3.0 && load > rect_newgame.width() / 1.5 )
         gw->painter->drawImage( rect_exit.x(), rect_exit.y(), button_exit, 0, 0, load - rect_exit.width() / 1.5, rect_exit.height() );
     else if ( load > rect_newgame.width() * 5.0 / 3.0 && oscillationCount_exit++ < 100 ) {
-        gw->painter->drawImage( rect_exit.x() + coeff_exit * qSin( 0.05 * ( load - rect_results.width() * 5.0 / 3.0 ) ) , rect_exit.y(), button_exit );
+        gw->painter->drawImage( rect_exit.x() + coeff_exit * qSin( 0.015 * ( load - rect_results.width() * 5.0 / 3.0 ) ) , rect_exit.y(), button_exit );
         coeff_exit -= 1;
     }
     else if ( load > rect_newgame.width() * 5.0 / 3.0 ) {
